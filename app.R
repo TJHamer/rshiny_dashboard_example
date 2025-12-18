@@ -55,28 +55,7 @@ ui <- dashboardPage(
   ),
   body = dashboardBody(
     tags$head(
-      tags$style(HTML("
-        /* Increase height of value boxes and add rounded corners */
-        .small-box {
-          height: 150px; /* Adjust height as needed */
-          border-radius: 15px; /* Rounded corners */
-        }
-        /* Vertically center content within value box */
-        .small-box .inner {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          height: 100%;
-        }
-        /* Adjust font size for value and subtitle if needed */
-        .small-box h3 {
-          font-size: 30px; /* Adjust font size for value */
-        }
-        .small-box p {
-          font-size: 16px; /* Adjust font size for subtitle */
-        }
-        
-      "))
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
     ),
     tabItems(
       tabItem(tabName = "aim_1", aim_1_tab_ui("aim_1")),

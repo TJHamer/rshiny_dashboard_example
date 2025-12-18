@@ -1,0 +1,137 @@
+/* custom.css */
+
+
+
+/*---------------------------------------------------------------------------*/
+/* Sidebar
+/*---------------------------------------------------------------------------*/
+
+/* Sidebar background color */
+.main-sidebar {
+    background-color: #fff; /* Default dark grey */
+}
+
+/* Sidebar menu item text color */
+.sidebar-menu > li > a {
+    color: #b8c7ce; /* Default light grey */
+}
+
+/* Sidebar menu item on hover */
+.sidebar-menu > li > a:hover {
+    background-color: #1e282c; /* Slightly darker grey */
+    color: #ffffff; /* White text */
+}
+
+/* Active sidebar menu item */
+.sidebar-menu > li.active > a {
+    background-color: #3c8dbc; /* Blue to match header */
+    color: #ffffff; /* White text */
+    border-left-color: #3c8dbc;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/* Value Boxes
+/*---------------------------------------------------------------------------*/
+
+/* Background color for a specific value box */
+/* Use the 'bg-' prefix with common colors like 'aqua', 'green', 'yellow', 'red' */
+.bg-aqua {
+    background-color: #00c0ef !important;
+}
+
+.bg-green {
+    background-color: #00a65a !important;
+}
+
+/* Custom color for a value box */
+.small-box.bg-custom-purple {
+    background-color: #605ca8 !important;
+    color: #ffffff !important;
+}
+
+/* Value box icon */
+.small-box .icon {
+    color: rgba(0, 0, 0, 0.15);
+    font-size: 70px; /* Adjust icon size */
+}
+
+/* Value box text */
+.small-box h3 {
+    font-size: 38px;
+    font-weight: bold;
+}
+
+.small-box p {
+    font-size: 15px;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/* Boxes (e.g., box(), tabBox())
+/*---------------------------------------------------------------------------*/
+
+/* Box header background color */
+.box.box-solid-primary > .box-header {
+  color:#fff;
+  background:#3c8dbc; /* Primary color */
+}
+
+/* Box border color */
+.box.box-primary {
+    border-top-color: #3c8dbc; /* Primary color */
+}
+
+/* Custom box style */
+.box.box-custom-style {
+    border-top-color: #f39c12; /* Custom orange color */
+}
+
+.box.box-solid-custom-style > .box-header {
+    color: #ffffff;
+    background: #f39c12;
+}
+
+
+/*---------------------------------------------------------------------------*/
+/* Tab Panels (e.g., tabsetPanel)
+/*---------------------------------------------------------------------------*/
+
+/* Active tab color */
+.nav-tabs-custom > .nav-tabs > li.active {
+    border-top-color: #3c8dbc; /* Blue */
+}
+
+.nav-tabs-custom > .nav-tabs > li.active > a,
+.nav-tabs-custom > .nav-tabs > li.active:hover > a {
+    background-color: #fff;
+    color: #444;
+}
+
+
+
+
+
+
+
+
+        /* Increase height of value boxes and add rounded corners */
+        .small-box {
+          height: 150px; /* Adjust height as needed */
+          border-radius: 15px; /* Rounded corners */
+        }
+        /* Vertically center content within value box */
+        .small-box .inner {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          height: 100%;
+        }
+        /* Adjust font size for value and subtitle if needed */
+        .small-box h3 {
+          font-size: 30px; /* Adjust font size for value */
+        }
+        .small-box p {
+          font-size: 16px; /* Adjust font size for subtitle */
+        }
+        
