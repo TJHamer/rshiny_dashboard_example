@@ -2,6 +2,7 @@ library(shiny)
 library(shinydashboard)
 library(ggplot2)
 library(dplyr)
+library(shinyWidgets)
 
 # Function to generate all initial dummy data
 generate_all_metrics_data <- function() {

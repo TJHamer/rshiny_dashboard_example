@@ -1,4 +1,5 @@
 library(dplyr) # Added to ensure dplyr functions are available
+library(scales) # Added for hue_pal
 
 metric_2_ui <- function(id) {
   ns <- NS(id)
@@ -22,7 +23,8 @@ metric_2_ui <- function(id) {
           ),
           selected = "Overall"
         ),
-        checkboxInput(ns("include_overall"), "Include Overall in plot", value = TRUE)
+        uiOutput(ns("show_hide_selection_ui")), # Dynamic UI for show/hide selection
+        uiOutput(ns("highlight_selection_ui")) # Dynamic UI for highlight selection
       )
     ), # Added comma here
     
@@ -95,20 +97,57 @@ metric_2_server <- function(id, data) {
         data$metric2_data
       })
       
-      # Reactive expression to get data for the selected characteristic type
-      filtered_plot_data <- reactive({
+      # Base reactive expression to get data for the selected characteristic type
+      base_filtered_plot_data <- reactive({
         req(input$characteristic_type_selection)
         
         current_data <- all_metric2_data_long_reactive() %>%
           filter(CharacteristicType == input$characteristic_type_selection)
         
-        if (input$include_overall && input$characteristic_type_selection != "Overall") {
+        if (input$characteristic_type_selection != "Overall") {
           overall_data <- all_metric2_data_long_reactive() %>%
             filter(CharacteristicType == "Overall")
           current_data <- rbind(current_data, overall_data)
         }
         
         current_data
+      })
+      
+      # Render the UI for the show/hide selection
+      output$show_hide_selection_ui <- renderUI({
+        ns <- session$ns
+        choices <- unique(base_filtered_plot_data()$CharacteristicValue)
+        
+        pickerInput(
+          ns("show_hide_selection"),
+          label = "Show/Hide:",
+          choices = choices,
+          selected = choices,
+          options = list(`actions-box` = TRUE),
+          multiple = TRUE
+        )
+      })
+      
+      # Reactive expression to get data for the plot based on show/hide selection
+      filtered_plot_data <- reactive({
+        req(input$show_hide_selection)
+        base_filtered_plot_data() %>%
+          filter(CharacteristicValue %in% input$show_hide_selection)
+      })
+      
+      # Render the UI for the highlight selection
+      output$highlight_selection_ui <- renderUI({
+        ns <- session$ns
+        choices <- unique(filtered_plot_data()$CharacteristicValue)
+        
+        pickerInput(
+          ns("highlight_selection"),
+          label = "Highlight:",
+          choices = choices,
+          selected = choices,
+          options = list(`actions-box` = TRUE),
+          multiple = TRUE
+        )
       })
       
       # Reactive for value boxes (always show overall or first available)
@@ -175,29 +214,57 @@ metric_2_server <- function(id, data) {
       output$metric2_plot_percentage <- renderPlot({
         plot_data <- filtered_plot_data()
         
-        ggplot(plot_data, aes(x = Quarter, y = Percentage, color = CharacteristicValue, group = CharacteristicValue)) +
-          geom_line(size = 1.5) +
-          geom_point(size = 3) +
+        highlighted_data <- plot_data %>% filter(CharacteristicValue %in% input$highlight_selection)
+        unhighlighted_data <- plot_data %>% filter(!CharacteristicValue %in% input$highlight_selection)
+        
+        # Generate a color palette
+        unique_characteristics <- unique(plot_data$CharacteristicValue)
+        color_palette <- hue_pal()(length(unique_characteristics))
+        names(color_palette) <- unique_characteristics
+        
+        p <- ggplot() +
+          geom_line(data = unhighlighted_data, aes(x = Quarter, y = Percentage, group = CharacteristicValue), color = "grey", alpha = 0.5, size = 1.5) +
+          geom_point(data = unhighlighted_data, aes(x = Quarter, y = Percentage, group = CharacteristicValue), color = "grey", alpha = 0.5, size = 3) +
+          geom_line(data = highlighted_data, aes(x = Quarter, y = Percentage, color = CharacteristicValue, group = CharacteristicValue), size = 1.5) +
+          geom_point(data = highlighted_data, aes(x = Quarter, y = Percentage, color = CharacteristicValue, group = CharacteristicValue), size = 3) +
+          scale_color_manual(values = color_palette) +
           ylim(0, 100) +
           labs(title = paste("Metric 2: Quarterly Performance by", input$characteristic_type_selection),
                y = "Percentage (%)",
-               x = "Quarter") +
+               x = "Quarter",
+               color = "Characteristic") +
           theme_classic() +
           theme(legend.position = "bottom")
+        
+        print(p)
       })
       
       output$metric2_plot_daysperweek <- renderPlot({
         plot_data <- filtered_plot_data()
         
-        ggplot(plot_data, aes(x = Quarter, y = DaysPerWeek, color = CharacteristicValue, group = CharacteristicValue)) +
-          geom_line(size = 1.5) +
-          geom_point(size = 3) +
+        highlighted_data <- plot_data %>% filter(CharacteristicValue %in% input$highlight_selection)
+        unhighlighted_data <- plot_data %>% filter(!CharacteristicValue %in% input$highlight_selection)
+        
+        # Generate a color palette
+        unique_characteristics <- unique(plot_data$CharacteristicValue)
+        color_palette <- hue_pal()(length(unique_characteristics))
+        names(color_palette) <- unique_characteristics
+        
+        p <- ggplot() +
+          geom_line(data = unhighlighted_data, aes(x = Quarter, y = DaysPerWeek, group = CharacteristicValue), color = "grey", alpha = 0.5, size = 1.5) +
+          geom_point(data = unhighlighted_data, aes(x = Quarter, y = DaysPerWeek, group = CharacteristicValue), color = "grey", alpha = 0.5, size = 3) +
+          geom_line(data = highlighted_data, aes(x = Quarter, y = DaysPerWeek, color = CharacteristicValue, group = CharacteristicValue), size = 1.5) +
+          geom_point(data = highlighted_data, aes(x = Quarter, y = DaysPerWeek, color = CharacteristicValue, group = CharacteristicValue), size = 3) +
+          scale_color_manual(values = color_palette) +
           ylim(0, 5) +
           labs(title = paste("Metric 2b: Quarterly Days per Week by", input$characteristic_type_selection),
                y = "Days per Week",
-               x = "Quarter") +
+               x = "Quarter",
+               color = "Characteristic") +
           theme_classic() +
           theme(legend.position = "bottom")
+        
+        print(p)
       })
       
       output$details <- renderPrint({
